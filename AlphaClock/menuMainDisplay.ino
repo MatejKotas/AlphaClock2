@@ -1,11 +1,12 @@
-#define MainMenuItems 6
+#define MainMenuItems 7
 
 #define FontMenuItem 0
 #define Menu24HItem 1
 #define NightMenuItem 2
 #define LightMenuItem 3
 #define BrightnessMenuItem 4
-#define BaseMenuItem 5
+#define LedTestMenuItem 5
+#define BaseMenuItem 6
 
 #define NightSubMenuItems 2
 #define NightStartSubMenuItem 0
@@ -62,6 +63,30 @@ void ShowMainMenu() {
         break;
       case BrightnessMenuItem:
         BrightnessSubMenu(optionValue);
+        break;
+      case LedTestMenuItem:
+        switch (editing) {
+          case 0:
+            Display("LED T", "00000", true);
+            break;
+          case 1:
+            if (optionValue == 1) {
+              brightness++;
+              updateBrightness();
+            }
+            else if (optionValue == 255) {
+              brightness--;
+              updateBrightness();
+            }
+
+            a5editFontChar('b', 255, 255, 255);
+            Display("bbbbb", "00000", false); // Light up all leds
+            break;
+          case 2:
+            editing = 1;
+            updateDisplay = true;
+            break;
+        }
         break;
       case BaseMenuItem:
         switch (editing) {
