@@ -12,11 +12,12 @@ unsigned long milliseconds;
 unsigned long CheckTimer;
 #define CheckTimerInterval 500
 
+unsigned long GeneralTimer; // Changes function based on mode
+
 // Stopwatch
 
 unsigned long StopwatchStart;
 unsigned long StopwatchPause;
-unsigned long StopwatchNextUpdate;
 bool StopwatchRunning;
 byte StopwatchShifted; // Display shifting
 const char StopwatchDP[11] = "01321212100";

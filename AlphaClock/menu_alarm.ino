@@ -1,3 +1,8 @@
+#define AlarmBeeps 4
+#define AlarmBeepRate 200
+#define AlarmBeepDuration 100
+#define AlarmTimeOut 1000 * 60 * 10 // 10 minutes in milliseconds
+
 void AlarmMenuTransition() {
   MenuTransition();
   State = AlarmMenuState;
@@ -8,10 +13,6 @@ void AlarmMenuTransition() {
   }
   CurrentAlarm = 0;
 }
-
-#define AlarmBeeps 4
-#define AlarmBeepRate 200
-#define AlarmBeepDuration 100
 
 void ShowAlarmNow() {
   if (NextBeepStateChange <= milliseconds) {
@@ -24,6 +25,9 @@ void ShowAlarmNow() {
       BeepState = 0;
       NextBeepStateChange = milliseconds + (AlarmBeepRate * AlarmBeeps);
     }
+  }
+  else if (GeneralTimer <= milliseconds) {
+    TimeTransition();
   }
 
   if (GetButton(TimeSetButton)) {
@@ -43,6 +47,7 @@ void AlarmNowTransition() {
   startEEPROMSaveTimer();
   State = AlarmNowState;
   NextBeepStateChange = milliseconds;
+  GeneralTimer = milliseconds + AlarmTimeOut; // In alarm now mode, generalTimer is timer for turning off alarm
   Display("ALARM", "00000", true);
 }
 

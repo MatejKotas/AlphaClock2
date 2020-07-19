@@ -1,5 +1,5 @@
 void StopwatchTransition() {
-  StopwatchNextUpdate = milliseconds;
+  GeneralTimer = milliseconds;
   updateDisplay = true;
 
   State = StopwatchState;
@@ -60,13 +60,13 @@ void ShowStopwatch() {
     StopwatchSeperator = true;
   }
 
-  if (updateDisplay || milliseconds >= StopwatchNextUpdate) {
-    StopwatchNextUpdate = milliseconds + 9;
+  if (updateDisplay || milliseconds >= GeneralTimer) {
+    GeneralTimer = milliseconds + 9;
     updateDisplay = false;
 
     if (!StopwatchRunning) {
       difference = StopwatchPause - StopwatchStart;
-      StopwatchNextUpdate = milliseconds + 10000; // Don't update regularly
+      GeneralTimer = milliseconds + 10000; // Don't update regularly
     }
 
     char temp[5] = "00000";
@@ -127,7 +127,7 @@ void ShowStopwatch() {
         j++;
       }
       Serial.println(StopwatchLapStore);
-      StopwatchNextUpdate = milliseconds + 10000; // Don't update regularly
+      GeneralTimer = milliseconds + 10000; // Don't update regularly
     }
 
     if (ToggleLap) {
