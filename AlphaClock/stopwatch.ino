@@ -61,7 +61,7 @@ void ShowStopwatch() {
   }
 
   if (updateDisplay || milliseconds >= GeneralTimer) {
-    GeneralTimer = milliseconds + 9;
+    GeneralTimer = milliseconds + (1000 / (Base * Base));
     updateDisplay = false;
 
     if (!StopwatchRunning) {
