@@ -94,38 +94,15 @@ void ShowMainMenu() {
             Display("BASE ", "00000", true);
             break;
           case 1:
-            if (optionValue != 0) {
-              updateDisplay = true;
-            }
-            switch (Base) {
-              case 8:
-                Display(" OCT ", "20000", false);
-                if (optionValue == 1) {
-                  Base = 10;
-                }
-                else if (optionValue == 255) {
-                  Base = 16;
-                }
-                break;
-              case 10:
-                Display(" DEC ", "20000", false);
-                if (optionValue == 1) {
-                  Base = 16;
-                }
-                else if (optionValue == 255) {
-                  Base = 8;
-                }
-                break;
-              case 16:
-                Display(" HEX ", "20000", false);
-                if (optionValue == 1) {
-                  Base = 8;
-                }
-                else if (optionValue == 255) {
-                  Base = 10;
-                }
-                break;
-            }
+            Base = changeOptionMin(Base, optionValue, 8, 37/*0 to 9, A to Z*/);
+            char temp[5] = "DEC__";
+            temp[3] = Base / 10 + '0';
+            temp[4] = Base % 10 + '0';
+            Display(temp, "20100", false);
+            break;
+          case 2:
+            editing = 1;
+            updateDisplay = true;
             break;
         }
         break;
