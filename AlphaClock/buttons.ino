@@ -47,6 +47,7 @@ bool GetButton(byte button) {
     if ((ButtonsState & alphaButton) && !(ButtonsTriggered & alphaButton)) {
       ButtonsTriggered ^= alphaButton;
       ButtonReadyTimes[button] = milliseconds + debounceTime;
+      MakeSound();
       return true;
     }
   }
@@ -67,7 +68,7 @@ bool GetButtonPair(byte button1, byte button2) {
         ButtonsTriggered ^= alphaButton2;
         ButtonReadyTimes[button2] = milliseconds + debounceTime;
       }
-
+      MakeSound();
       return true;
     }
   }
@@ -84,6 +85,7 @@ bool GetHoldButton(byte button) {
     else if ((ButtonsState & alphaButton) && !(ButtonsTriggered & alphaButton)) { // Copied from GetButton()
       ButtonsTriggered ^= alphaButton;
       ButtonReadyTimes[button] = milliseconds + debounceTime;
+      MakeSound();
       return true;
     }
   }
@@ -93,5 +95,15 @@ bool GetHoldButton(byte button) {
 #define OneTriggerHoldTime 300
 
 bool GetHoldButton_oneTrigger(byte button) {
-  return (ButtonReadyTimes[button] <= milliseconds && ButtonStartTimes[button] + OneTriggerHoldTime <= milliseconds && bitRead(ButtonsState, button));
+  if (ButtonReadyTimes[button] <= milliseconds && ButtonStartTimes[button] + OneTriggerHoldTime <= milliseconds && bitRead(ButtonsState, button)) {
+    MakeSound();
+    return true;
+  }
+  return false; // No need for else statement
+}
+
+void MakeSound() {
+  if (EnableSound) {
+    a5tone(SoundFreqency, SoundDuration);
+  }
 }

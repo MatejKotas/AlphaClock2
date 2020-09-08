@@ -120,10 +120,15 @@ void ShowDate() {
     temp[3] = ToCurrentBase(timeTemp, 1);
     temp[4] = ToCurrentBase(timeTemp, 0);
 
+    if (temp[3] == '0') {
+      temp[3] = ' ';
+    }
+
     Display(temp, tempDP, true);
   }
 
   if (!bitRead(ButtonsState, TimeSetButton))  {
+    MakeSound();
     TimeTransition();
   }
 }

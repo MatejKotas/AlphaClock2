@@ -14,6 +14,10 @@ unsigned long CheckTimer;
 
 unsigned long GeneralTimer; // Changes function based on mode
 
+bool EnableSound;
+#define SoundFreqency 1397
+#define SoundDuration 100
+
 // Stopwatch
 
 unsigned long StopwatchStart;
@@ -108,14 +112,11 @@ bool UseSpinner;
 // Factory defaults
 
 #define DefaultFont 0
-#define DefaultBrightnessAdjustmentEnabled 0
 #define DefaultNightStart 20
 #define DefaultNightEnd 8
 #define DefaultNightBrightness 1
 #define DefaultDayBrightness 20
-#define DefaultMode24H 1
 #define DefaultLightDay 0
 #define DefaultLightNight 10
 
-#define DefaultUseSpinner 1
 #define DefaultBase 10

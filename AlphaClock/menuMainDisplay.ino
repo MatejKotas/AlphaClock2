@@ -1,12 +1,13 @@
-#define MainMenuItems 7
+#define MainMenuItems 8
 
-#define FontMenuItem 0
-#define Menu24HItem 1
-#define NightMenuItem 2
-#define LightMenuItem 3
-#define BrightnessMenuItem 4
-#define LedTestMenuItem 5
-#define BaseMenuItem 6
+#define SoundMenuItem 0
+#define FontMenuItem 1
+#define Menu24HItem 2
+#define NightMenuItem 3
+#define LightMenuItem 4
+#define BrightnessMenuItem 5
+#define LedTestMenuItem 6
+#define BaseMenuItem 7
 
 #define NightSubMenuItems 2
 #define NightStartSubMenuItem 0
@@ -99,6 +100,21 @@ void ShowMainMenu() {
             temp[3] = Base / 10 + '0';
             temp[4] = Base % 10 + '0';
             Display(temp, "20100", false);
+            break;
+          case 2:
+            editing = 1;
+            updateDisplay = true;
+            break;
+        }
+        break;
+      case SoundMenuItem:
+        switch (editing) {
+          case 0:
+            Display("SOUND", "00000", true);
+            break;
+          case 1:
+            EnableSound = changeOption(EnableSound, optionValue, 2);
+            DisplayBool(EnableSound, "20000", false);
             break;
           case 2:
             editing = 1;

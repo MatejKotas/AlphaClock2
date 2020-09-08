@@ -9,13 +9,16 @@ void writeEEPROM() {
   EEPROMUpdatePending = false;
 
   int j = 0;
+  int j_bools = 0;
+  byte booleans = 0;
+
   writeEEPROMSetting(j++, Font,                    true );
-  writeEEPROMSetting(j++, UseBrightnessAdjustment, true );
+  bitWrite(booleans, j_bools++, UseBrightnessAdjustment);
   writeEEPROMSetting(j++, NightStart,              true );
   writeEEPROMSetting(j++, NightEnd,                true );
   writeEEPROMSetting(j++, NightBrightness,         true );
   writeEEPROMSetting(j++, DayBrightness,           true );
-  writeEEPROMSetting(j++, Mode24H,                 true );
+  bitWrite(booleans, j_bools++, Mode24H);
   writeEEPROMSetting(j++, LightDay,                true );
   writeEEPROMSetting(j++, LightNight,              true );
   writeEEPROMSetting(j++, AlarmsEnabled,           true );
@@ -25,19 +28,19 @@ void writeEEPROM() {
     writeEEPROMSetting(j++, AlarmTimesHour[i], true);
   }
 
-  writeEEPROMSetting(j++, UseSpinner, true );
-  writeEEPROMSetting(j++, Base,       true );
+  bitWrite(booleans, j_bools++, UseSpinner);
+  writeEEPROMSetting(j++, Base, true);
+  bitWrite(booleans, j_bools++, EnableSound);
+  writeEEPROMSetting(j++, booleans, true);
 }
 
 void readEEPROM() {
   int j = 0;
   Font =                    readEEPROMSetting(j++, Fonts - 1,     DefaultFont,                        true );
-  UseBrightnessAdjustment = readEEPROMSetting(j++, 1,             DefaultBrightnessAdjustmentEnabled, true );
   NightStart =              readEEPROMSetting(j++, 23,            DefaultNightStart,                  true );
   NightEnd =                readEEPROMSetting(j++, 23,            DefaultNightEnd,                    true );
   NightBrightness =         readEEPROMSetting(j++, a5_MaxBright,  DefaultNightBrightness,             true );
   DayBrightness =           readEEPROMSetting(j++, a5_MaxBright,  DefaultDayBrightness,               true );
-  Mode24H =                 readEEPROMSetting(j++, 1,             DefaultMode24H,                     true );
   LightDay =                readEEPROMSetting(j++, NightLightMax, DefaultLightDay,                    true );
   LightNight =              readEEPROMSetting(j++, NightLightMax, DefaultLightNight,                  true );
   AlarmsEnabled =           readEEPROMSetting(j++, 63,            0,                                  true );
@@ -52,8 +55,15 @@ void readEEPROM() {
     IncreaseAlarm(SnoozeMinutes * Snoozed[i]);
   }
 
-  UseSpinner = readEEPROMSetting(j++, 1,     DefaultUseSpinner, true );
-  Base       = readEEPROMSetting(j++, 16,    DefaultBase,       true );
+  Base          = readEEPROMSetting(j++, 37,    DefaultBase,       true );
+
+  byte booleans = readEEPROMSetting(j++, 15,    4,                 true);
+
+  j = 0;
+  UseBrightnessAdjustment = bitRead(booleans, j++);
+  Mode24H                 = bitRead(booleans, j++);
+  UseSpinner              = bitRead(booleans, j++);
+  EnableSound            = bitRead(booleans, j++);
 }
 
 void writeEEPROMSetting(int slot, byte value, bool subtract) {
@@ -74,7 +84,7 @@ void writeEEPROMSetting(int slot, byte value, bool subtract) {
 
 byte readEEPROMSetting(int slot, int maximumValue, byte defaultValue, bool subtract) {
   byte value = EEPROM.read(slot);
-  if (value > maximumValue + (100 * subtract) || (value < 100 && !subtract)) {
+  if ((value > maximumValue + (100 * subtract)) || (value < 100 && subtract)) {
     return defaultValue;
   }
   else {
