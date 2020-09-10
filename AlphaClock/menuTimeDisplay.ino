@@ -34,7 +34,6 @@ void ShowTimeMenu() {
     if (editing == 0) {
       option = changeOption(option, optionValue, TimeMenuItems);
     }
-
     switch (option) {
       case TimeMenuItemTime:
         TimeTimeMenu(optionValue);
@@ -65,6 +64,10 @@ void TimeTimeMenu(byte optionValue) {
           break;
       }
       break;
+    case 3:
+      editing = 2;
+      updateDisplay = true;
+      break;
     case 2:
       long optionValueLong = optionValue;
       if (optionValue == 255) {
@@ -84,10 +87,6 @@ void TimeTimeMenu(byte optionValue) {
           DisplayNumber(second(), "20000", false);
           break;
       }
-      break;
-    case 3:
-      editing = 2;
-      updateDisplay = true;
       break;
   }
 }
@@ -111,6 +110,10 @@ void DateMenu(byte optionValue) {
           break;
       }
       break;
+    case 3:
+      editing = 2;
+      updateDisplay = true;
+      break;
     case 2:
       long optionValueLong = optionValue;
       if (optionValue == 255) {
@@ -130,10 +133,6 @@ void DateMenu(byte optionValue) {
           DisplayNumber(year(), "20000", false);
           break;
       }
-      break;
-    case 3:
-      editing = 2;
-      updateDisplay = true;
       break;
   }
 }
