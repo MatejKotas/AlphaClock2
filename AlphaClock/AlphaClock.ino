@@ -14,6 +14,8 @@ unsigned long CheckTimer;
 
 unsigned long GeneralTimer; // Changes function based on mode
 
+const char MonthNames[36] = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
+
 bool EnableSound;
 #define SoundFreqency 1397
 #define SoundDuration 100

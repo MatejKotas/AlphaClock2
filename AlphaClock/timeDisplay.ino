@@ -1,5 +1,3 @@
-const char MonthNames[36] = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
-
 void ShowTime() {
   byte SecondTemp2 = second();
 

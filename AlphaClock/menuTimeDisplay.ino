@@ -122,7 +122,15 @@ void DateMenu(byte optionValue) {
       switch (subOption) {
         case MonthMenuItem:
           setTime(hour(), minute(), second(), day(), month() + optionValueLong, year());
-          DisplayNumber(month(), "20000", false);
+          char temp[5] = "     ";
+
+          byte monthTemp = (month() - 1) * 3;
+          temp[1] = MonthNames[monthTemp];
+          temp[2] = MonthNames[monthTemp + 1];
+          temp[3] = MonthNames[monthTemp + 2];
+
+          Display(temp, "20000", false);
+          
           break;
         case DayMenuItem:
           setTime(hour(), minute(), second(), day() + optionValueLong, month(), year());
