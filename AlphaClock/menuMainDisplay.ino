@@ -236,6 +236,9 @@ void BrightnessSubMenu(byte optionValue) {
           DisplayNumber(NightBrightness, "20000", false);
           break;
       }
+    case 3:
+      editing = 2;
+      break;
   }
 }
 

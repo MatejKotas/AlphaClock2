@@ -66,7 +66,6 @@ void TimeTimeMenu(byte optionValue) {
       break;
     case 3:
       editing = 2;
-      updateDisplay = true;
       break;
     case 2:
       long optionValueLong = optionValue;
@@ -112,7 +111,6 @@ void DateMenu(byte optionValue) {
       break;
     case 3:
       editing = 2;
-      updateDisplay = true;
       break;
     case 2:
       long optionValueLong = optionValue;
