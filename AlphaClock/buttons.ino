@@ -24,28 +24,26 @@ void ManageButtons() {
   byte ButtonsStateLast = ButtonsState;
   ButtonsState = a5GetButtons();
 
-  byte alphaButton = 1;
   for (int i = 0; i < Buttons; i++) {
     if (ButtonReadyTimes[i] - milliseconds > MillisHalfOverflow) {
-      if (!(ButtonsState & alphaButton)) {
-        if (ButtonsTriggered & alphaButton) {
-          ButtonsTriggered ^= alphaButton;
+      if (!bitRead(ButtonsState, i)) {
+        if (bitRead(ButtonsTriggered, i)) {
+          bitClear(ButtonsTriggered, i);
           ButtonReadyTimes[i] = milliseconds + debounceTime;
         }
       }
-      else if ((!(ButtonsStateLast & alphaButton)) && (ButtonsState & alphaButton)) {
+      else if (!bitRead(ButtonsStateLast, i) && bitRead(ButtonsState, i)) {
         ButtonStartTimes[i] = milliseconds;
       }
     }
-    alphaButton <<= 1;
   }
 }
 
 bool GetButton(byte button) {
   if (ButtonReadyTimes[button] - milliseconds > MillisHalfOverflow) {
     byte alphaButton = 1 << button;
-    if ((ButtonsState & alphaButton) && !(ButtonsTriggered & alphaButton)) {
-      ButtonsTriggered ^= alphaButton;
+    if (bitRead(ButtonsState, button) && !bitRead(ButtonsTriggered, button)) {
+      bitSet(ButtonsTriggered, button);
       ButtonReadyTimes[button] = milliseconds + debounceTime;
       MakeSound();
       return true;
@@ -56,16 +54,13 @@ bool GetButton(byte button) {
 
 bool GetButtonPair(byte button1, byte button2) {
   if (ButtonReadyTimes[button1] - milliseconds > MillisHalfOverflow ||  ButtonReadyTimes[button2] - milliseconds > MillisHalfOverflow) {
-    byte alphaButton1 = 1 << button1;
-    byte alphaButton2 = 1 << button2;
-
-    if ((ButtonsState & alphaButton1) && (ButtonsState & alphaButton2) && !((ButtonsTriggered & alphaButton1) && (ButtonsTriggered & alphaButton2)) && (absoluteValue(ButtonStartTimes[button1] - ButtonStartTimes[button2]) <= TwoButtonThreshhold)) {
-      if (!(ButtonsTriggered & alphaButton1)) {
-        ButtonsTriggered ^= alphaButton1;
+    if (bitRead(ButtonsState, button1) && bitRead(ButtonsState, button2) && !(bitRead(ButtonsTriggered, button1) && bitRead(ButtonsTriggered, button2)) && (absoluteValue(ButtonStartTimes[button1] - ButtonStartTimes[button2]) <= TwoButtonThreshhold)) {
+      if (!bitRead(ButtonsTriggered, button1)) {
+        bitSet(ButtonsTriggered, button1);
         ButtonReadyTimes[button1] = milliseconds + debounceTime;
       }
-      if (!(ButtonsTriggered & alphaButton2)) {
-        ButtonsTriggered ^= alphaButton2;
+      if (!bitRead(ButtonsTriggered, button2)) {
+        bitSet(ButtonsTriggered, button2);
         ButtonReadyTimes[button2] = milliseconds + debounceTime;
       }
       MakeSound();
@@ -78,12 +73,12 @@ bool GetButtonPair(byte button1, byte button2) {
 bool GetHoldButton(byte button) {
   if (ButtonReadyTimes[button] - milliseconds > MillisHalfOverflow) {
     byte alphaButton = 1 << button;
-    if (ButtonStartTimes[button] + ButtonStartHold - milliseconds > MillisHalfOverflow && (ButtonsState & alphaButton)) {
+    if (ButtonStartTimes[button] + ButtonStartHold - milliseconds > MillisHalfOverflow && bitRead(ButtonsState, button)) {
       ButtonStartTimes[button] += ButtonHoldTriggerRate; // Set up start time so we get here in ButtonHoldTriggerRate milliseconds
       return true;
     }
-    else if ((ButtonsState & alphaButton) && !(ButtonsTriggered & alphaButton)) { // Copied from GetButton()
-      ButtonsTriggered ^= alphaButton;
+    else if (bitRead(ButtonsState, button) && !bitRead(ButtonsTriggered, button)) { // Copied from GetButton()
+      bitSet(ButtonsTriggered, button);
       ButtonReadyTimes[button] = milliseconds + debounceTime;
       MakeSound();
       return true;
