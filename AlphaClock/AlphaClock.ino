@@ -8,11 +8,12 @@ unsigned long FadeUpdateTimer;
 bool Fading;
 
 unsigned long milliseconds;
+const unsigned long MillisHalfOverflow = (unsigned long)-1 / 2;
 
 unsigned long CheckTimer;
 #define CheckTimerInterval 500
 
-unsigned long GeneralTimer; // Changes function based on mode
+unsigned long GeneralTimer; // Changes function based on state
 
 const char MonthNames[36] = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
 
@@ -88,7 +89,7 @@ byte State;
 #define ShowDateState 5
 #define StopwatchState 6
 
-// Base 10 / 16 / 8
+// Base
 
 byte Base;
 

@@ -26,7 +26,7 @@ void ManageButtons() {
 
   byte alphaButton = 1;
   for (int i = 0; i < Buttons; i++) {
-    if (milliseconds >= ButtonReadyTimes[i]) {
+    if (ButtonReadyTimes[i] - milliseconds > MillisHalfOverflow) {
       if (!(ButtonsState & alphaButton)) {
         if (ButtonsTriggered & alphaButton) {
           ButtonsTriggered ^= alphaButton;
@@ -42,7 +42,7 @@ void ManageButtons() {
 }
 
 bool GetButton(byte button) {
-  if (milliseconds >= ButtonReadyTimes[button]) {
+  if (ButtonReadyTimes[button] - milliseconds > MillisHalfOverflow) {
     byte alphaButton = 1 << button;
     if ((ButtonsState & alphaButton) && !(ButtonsTriggered & alphaButton)) {
       ButtonsTriggered ^= alphaButton;
@@ -55,7 +55,7 @@ bool GetButton(byte button) {
 }
 
 bool GetButtonPair(byte button1, byte button2) {
-  if (milliseconds >= ButtonReadyTimes[button1] || milliseconds >= ButtonReadyTimes[button2]) {
+  if (ButtonReadyTimes[button1] - milliseconds > MillisHalfOverflow ||  ButtonReadyTimes[button2] - milliseconds > MillisHalfOverflow) {
     byte alphaButton1 = 1 << button1;
     byte alphaButton2 = 1 << button2;
 
@@ -76,9 +76,9 @@ bool GetButtonPair(byte button1, byte button2) {
 }
 
 bool GetHoldButton(byte button) {
-  if (milliseconds >= ButtonReadyTimes[button]) {
+  if (ButtonReadyTimes[button] - milliseconds > MillisHalfOverflow) {
     byte alphaButton = 1 << button;
-    if (milliseconds >= ButtonStartTimes[button] + ButtonStartHold && (ButtonsState & alphaButton)) {
+    if (ButtonStartTimes[button] + ButtonStartHold - milliseconds > MillisHalfOverflow && (ButtonsState & alphaButton)) {
       ButtonStartTimes[button] += ButtonHoldTriggerRate; // Set up start time so we get here in ButtonHoldTriggerRate milliseconds
       return true;
     }
@@ -95,7 +95,7 @@ bool GetHoldButton(byte button) {
 #define OneTriggerHoldTime 300
 
 bool GetHoldButton_oneTrigger(byte button) {
-  if (ButtonReadyTimes[button] <= milliseconds && ButtonStartTimes[button] + OneTriggerHoldTime <= milliseconds && bitRead(ButtonsState, button)) {
+  if (ButtonReadyTimes[button] - milliseconds > MillisHalfOverflow && ButtonStartTimes[button] + OneTriggerHoldTime - milliseconds > MillisHalfOverflow && bitRead(ButtonsState, button)) {
     MakeSound();
     return true;
   }

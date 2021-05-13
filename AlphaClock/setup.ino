@@ -2,6 +2,8 @@ void setup()
 {
   a5Init();
 
+  Serial.println("Init.");
+
   readEEPROM();
   a5loadAltNumbers(Font);
 

@@ -6,7 +6,7 @@ void loop()
 
   ManageButtons();
 
-  if (milliseconds >= CheckTimer) {
+  if (CheckTimer - milliseconds > MillisHalfOverflow) { // Triggers every 500 ms
     Check();
   }
 
@@ -50,7 +50,7 @@ void Check() {
     }
     updateBrightness();
   }
-  if (EEPROMUpdatePending && milliseconds >= UpdateEEPROMTimer) {
+  if (EEPROMUpdatePending && UpdateEEPROMTimer - milliseconds > MillisHalfOverflow) {
     writeEEPROM();
   }
   CheckAlarm();

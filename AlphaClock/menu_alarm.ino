@@ -14,7 +14,7 @@ void AlarmMenuTransition() {
 }
 
 void ShowAlarmNow() {
-  if (NextBeepStateChange <= milliseconds) {
+  if (NextBeepStateChange - milliseconds > MillisHalfOverflow) {
     if (BeepState < AlarmBeeps) {
       a5tone(880, AlarmBeepDuration);
       NextBeepStateChange = milliseconds + AlarmBeepRate;
@@ -25,7 +25,7 @@ void ShowAlarmNow() {
       NextBeepStateChange = milliseconds + (AlarmBeepRate * AlarmBeeps);
     }
   }
-  else if (GeneralTimer <= milliseconds) {
+  else if (GeneralTimer - milliseconds > MillisHalfOverflow) {
     TimeTransition();
   }
 
@@ -46,7 +46,7 @@ void AlarmNowTransition() {
   startEEPROMSaveTimer();
   State = AlarmNowState;
   NextBeepStateChange = milliseconds;
-  GeneralTimer = milliseconds + 600000; // In alarm now mode, generalTimer is timer for turning off alarm
+  GeneralTimer = milliseconds + (10 * 60 * 1000); // In alarm now mode, generalTimer is timer for turning off alarm. Turn off alarm in 10 minutes
   Display("ALARM", "00000", true);
 }
 
