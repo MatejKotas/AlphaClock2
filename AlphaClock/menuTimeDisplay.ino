@@ -91,54 +91,58 @@ void TimeTimeMenu(byte optionValue) {
 }
 
 void DateMenu(byte optionValue) {
-  switch (editing) {
-    case 0:
-      Display("DATE ", "00002", true);
-      break;
-    case 1:
-      subOption = changeOption(subOption, optionValue, TimeDateMenuItems);
-      switch (subOption) {
-        case MonthMenuItem:
-          Display("MONTH", "00000", true);
-          break;
-        case DayMenuItem:
-          Display(" DAY ", "00000", true);
-          break;
-        case YearMenuItem:
-          Display("YEAR ", "00000", true);
-          break;
-      }
-      break;
-    case 3:
-      editing = 2;
-      break;
-    case 2:
-      long optionValueLong = optionValue;
-      if (optionValue == 255) {
-        optionValueLong = -1;
-      }
-      switch (subOption) {
-        case MonthMenuItem:
-          setTime(hour(), minute(), second(), day(), month() + optionValueLong, year());
-          char temp[5] = "     ";
-
-          byte monthTemp = (month() - 1) * 3;
-          temp[1] = MonthNames[monthTemp];
-          temp[2] = MonthNames[monthTemp + 1];
-          temp[3] = MonthNames[monthTemp + 2];
-
-          Display(temp, "20000", false);
-          
-          break;
-        case DayMenuItem:
-          setTime(hour(), minute(), second(), day() + optionValueLong, month(), year());
-          DisplayNumber(day(), "20000", false);
-          break;
-        case YearMenuItem:
-          setTime(hour(), minute(), second(), day(), month(), year() + optionValueLong);
-          DisplayNumber(year(), "20000", false);
-          break;
-      }
-      break;
+  if (editing == 0) {
+    Display("DATE ", "00002", true);
   }
+  else if (editing == 1) {
+    subOption = changeOption(subOption, optionValue, TimeDateMenuItems);
+    switch (subOption) {
+      case MonthMenuItem:
+        Display("MONTH", "00000", true);
+        break;
+      case DayMenuItem:
+        Display(" DAY ", "00000", true);
+        break;
+      case YearMenuItem:
+        Display("YEAR ", "00000", true);
+        break;
+    }
+  }
+  else if (editing == 2) {
+    long optionValueLong = optionValue;
+    if (optionValue == 255) {
+      optionValueLong = -1;
+    }
+
+    switch (subOption) {
+      case MonthMenuItem:
+        ShowMonth(optionValueLong);
+        break;
+
+      case DayMenuItem:
+        setTime(hour(), minute(), second(), day() + optionValueLong, month(), year());
+        DisplayNumber(day(), "20000", false);
+        break;
+
+      case YearMenuItem:
+        setTime(hour(), minute(), second(), day(), month(), year() + optionValueLong);
+        DisplayNumber(year(), "20000", false);
+        break;
+    }
+  }
+  else if (editing == 3) {
+    editing = 2;
+  }
+}
+
+void ShowMonth(long optionValueLong) { // Must do because of compiler bug
+  setTime(hour(), minute(), second(), day(), month() + optionValueLong, year());
+  char temp[5] = "     ";
+
+  byte monthTemp = (month() - 1) * 3;
+  temp[1] = MonthNames[monthTemp];
+  temp[2] = MonthNames[monthTemp + 1];
+  temp[3] = MonthNames[monthTemp + 2];
+
+  Display(temp, "20000", false);
 }
