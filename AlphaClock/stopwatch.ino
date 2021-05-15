@@ -102,9 +102,14 @@ void ShowStopwatch() {
       StopwatchStore[2] = ToCurrentBase(differenceTemp, 0); // days
       difference /= 7;
 
-      differenceTemp = difference % (Base * Base);
-      StopwatchStore[1] = ToCurrentBase(differenceTemp, 0); // weeks
-      StopwatchStore[0] = ToCurrentBase(differenceTemp, 1); // 10 weeks
+      if (difference) {
+        StopwatchWeeks++;
+        StopwatchWeeks %= (Base * Base);
+        StopwatchStart += ((unsigned long)1000) * 60 * 60 * 24 * 7;
+      }
+
+      StopwatchStore[1] = ToCurrentBase(StopwatchWeeks, 0); // weeks
+      StopwatchStore[0] = ToCurrentBase(StopwatchWeeks, 1); // 10 weeks
 
       if (ToggleLap) {
         if (!StopwatchLap) {

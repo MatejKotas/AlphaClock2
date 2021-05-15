@@ -32,6 +32,7 @@ const char StopwatchDP[11] = "01321212100";
 bool StopwatchLap;
 char StopwatchLapStore[11] = "0000000000";
 bool StopwatchSeperator;
+byte StopwatchWeeks;
 
 // Alarms
 
