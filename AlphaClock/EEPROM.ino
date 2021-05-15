@@ -21,17 +21,15 @@ void writeEEPROM() {
   bitWrite(booleans, j_bools++, Mode24H);
   writeEEPROMSetting(j++, LightDay,                true );
   writeEEPROMSetting(j++, LightNight,              true );
-  writeEEPROMSetting(j++, AlarmsEnabled,           true );
-
-  for (int i = 0; i < Alarms - 1; i++) {
-    writeEEPROMSetting(j++, AlarmTimesMinute[i], true);
-    writeEEPROMSetting(j++, AlarmTimesHour[i], true);
-  }
-
+  writeEEPROMSetting(j++, AlarmEnabled,            true );
+  ChangeAlarm(-AlarmSnoozed * SnoozeMinutes);
+  writeEEPROMSetting(j++, AlarmMinute,             true );
+  writeEEPROMSetting(j++, AlarmHour,               true );
+  ChangeAlarm(-AlarmSnoozed * SnoozeMinutes);
   bitWrite(booleans, j_bools++, UseSpinner);
-  writeEEPROMSetting(j++, Base, true);
+  writeEEPROMSetting(j++, Base,                    true);
   bitWrite(booleans, j_bools++, EnableSound);
-  writeEEPROMSetting(j++, booleans, true);
+  writeEEPROMSetting(j++, booleans,                true);
 }
 
 void readEEPROM() {
@@ -43,27 +41,18 @@ void readEEPROM() {
   DayBrightness =           readEEPROMSetting(j++, a5_MaxBright,  DefaultDayBrightness,               true );
   LightDay =                readEEPROMSetting(j++, NightLightMax, DefaultLightDay,                    true );
   LightNight =              readEEPROMSetting(j++, NightLightMax, DefaultLightNight,                  true );
-  AlarmsEnabled =           readEEPROMSetting(j++, 63,            0,                                  true );
-
-  for (int i = 0; i < Alarms - 1; i++) {
-    CurrentAlarm = i + 1;
-    DecreaseAlarm(SnoozeMinutes * Snoozed[i]);
-
-    AlarmTimesMinute[i] = readEEPROMSetting(j++, 59, 0, true );
-    AlarmTimesHour[i] =   readEEPROMSetting(j++, 23, 0, true );
-
-    IncreaseAlarm(SnoozeMinutes * Snoozed[i]);
-  }
-
-  Base          = readEEPROMSetting(j++, 37,    DefaultBase,       true );
-
-  byte booleans = readEEPROMSetting(j++, 15,    4,                 true);
+  AlarmEnabled =            readEEPROMSetting(j++, 63,            0,                                  true );
+  AlarmMinute =             readEEPROMSetting(j++, 59,            0,                                  true );
+  AlarmHour =               readEEPROMSetting(j++, 23,            0,                                  true );
+  AlarmSnoozed = 0;
+  Base          =           readEEPROMSetting(j++, 37,            DefaultBase,                        true );
+  byte booleans =           readEEPROMSetting(j++, 15,            4,                                  true );
 
   j = 0;
   UseBrightnessAdjustment = bitRead(booleans, j++);
   Mode24H                 = bitRead(booleans, j++);
   UseSpinner              = bitRead(booleans, j++);
-  EnableSound            = bitRead(booleans, j++);
+  EnableSound             = bitRead(booleans, j++);
 }
 
 void writeEEPROMSetting(int slot, byte value, bool subtract) {

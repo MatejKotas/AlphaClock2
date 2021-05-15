@@ -5,7 +5,7 @@ byte editing;
 void MenuTransition() {
   option = 0;
   subOption = 0;
-  editing = false;
+  editing = 0;
   updateDisplay = true;
 
   EEPROMUpdatePending = false;

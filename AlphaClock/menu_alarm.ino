@@ -2,15 +2,16 @@
 #define AlarmBeepRate 200
 #define AlarmBeepDuration 100
 
-void AlarmMenuTransition() {
-  MenuTransition();
-  State = AlarmMenuState;
-  for (int i = 0; i < Alarms - 1; i++) {
-    CurrentAlarm = i + 1;
-    DecreaseAlarm(Snoozed[CurrentAlarm - 1] * SnoozeMinutes);
-    Snoozed[CurrentAlarm - 1] = 0;
+void ChangeAlarm(int amount) { // Increases the Alarm time amount minutes. Decreases Alarm time when amount is negative.
+  int temp = AlarmMinute + amount;
+  int temp2 = AlarmHour;
+  while (temp < 0) {
+    temp += 60;
+    temp2 -= 1;
   }
-  CurrentAlarm = 0;
+
+  AlarmMinute = temp % 60;
+  AlarmHour = (temp2 + (temp / 60)) % 24;
 }
 
 void ShowAlarmNow() {
@@ -30,21 +31,21 @@ void ShowAlarmNow() {
   }
 
   if (GetButton(TimeSetButton)) {
-    DecreaseAlarm(Snoozed[CurrentAlarm - 1] * SnoozeMinutes);
-    Snoozed[CurrentAlarm - 1] = 0;
+    ChangeAlarm(-AlarmSnoozed * SnoozeMinutes);
+    AlarmSnoozed = 0;
     TimeTransition();
   }
   else if (GetButton(AlarmSetButton)) {
-    IncreaseAlarm(SnoozeMinutes);
-    Snoozed[CurrentAlarm - 1]++;
-    bitSet(AlarmsDone, CurrentAlarm);
+    ChangeAlarm(SnoozeMinutes);
+    AlarmSnoozed++;
     TimeTransition();
   }
 }
 
 void AlarmNowTransition() {
-  startEEPROMSaveTimer();
   State = AlarmNowState;
+  AlarmTriggered = true;
+  BeepState = 0;
   NextBeepStateChange = milliseconds;
   GeneralTimer = milliseconds + (10 * 60 * 1000); // In alarm now mode, generalTimer is timer for turning off alarm. Turn off alarm in 10 minutes
   Display("ALARM", "00000", true);
@@ -54,33 +55,19 @@ void CheckAlarm() {
   byte hourTemp = hour();
   byte minuteTemp = minute();
 
-  if (AlarmsDone > 0) {
-    AlarmsDone &= 0b00111111;
+  if (minuteTemp != 0)
+    HourlySignalTriggered = false;
 
-    if (minuteTemp != 0) {
-      bitClear(AlarmsDone, 0);
-    }
+  if (minuteTemp != AlarmMinute)
+    AlarmTriggered = false;
 
-    for (int i = 0; i < Alarms - 1; i++) {
-      if (minuteTemp != AlarmTimesMinute[i]) {
-        bitClear(AlarmsDone, i + 1);
-      }
-    }
-  }
-
-  if (AlarmsEnabled > 0 && State != AlarmMenuState) {
-    AlarmsEnabled &= 0b00111111;
-
-    if (minuteTemp == 0 && !bitRead(AlarmsDone, 0) && bitRead(AlarmsEnabled, 0)) {
-      bitSet(AlarmsDone, 0);
+  if (State != AlarmMenuState) {
+    if (minuteTemp == 0 && !HourlySignalTriggered && bitRead(AlarmEnabled, 7)) {
+      HourlySignalTriggered = true;
       a5tone(880, 200);
     }
-    for (int i = 0; i < Alarms - 1; i++) {
-      if (minuteTemp == AlarmTimesMinute[i] && hourTemp == AlarmTimesHour[i] && !bitRead(AlarmsDone, i + 1) && bitRead(AlarmsEnabled, i + 1)) {
-        bitSet(AlarmsDone, i + 1);
-        CurrentAlarm = i + 1;
-        AlarmNowTransition();
-      }
+    else if (!AlarmTriggered && minuteTemp == AlarmMinute && hourTemp == AlarmHour && bitRead(AlarmEnabled, (weekday() - 2 + 7) % 7)) {
+      AlarmNowTransition();
     }
   }
 }
@@ -95,97 +82,108 @@ void ShowAlarmMenu() {
 
   if (updateDisplay) {
     updateDisplay = false;
-    if (editing == 0) {
-      CurrentAlarm = changeOption(CurrentAlarm, optionValue, Alarms);
+    switch (editing) {
+      case 0:
+        option = changeOption(option, optionValue, 9);
 
-      char temp_DP[5] = "00000";
-      if (bitRead(AlarmsEnabled, CurrentAlarm)) {
-        temp_DP[0] = '2';
-      }
+        if (option == 0) {
+          char temp_DP[5] = "00000";
+          if (AlarmEnabled & 0b01111111) {
+            temp_DP[0] = '2';
+          }
 
-      if (CurrentAlarm == 0) {
-        Display("SIGNL", temp_DP, true);
-      }
-      else {
-        char temp[5] = " AL_ ";
-        temp[3] = CurrentAlarm + '0';
-
-        Display(temp, temp_DP, true);
-      }
-    }
-    else if (editing == 1) {
-      char temp_DP2[5] = "01200";
-
-      if (bitRead(AlarmsEnabled, CurrentAlarm)) {
-        temp_DP2[0] = '2';
-      }
-
-      if (CurrentAlarm == 0) { // SIG
-        Display(" _00 ", temp_DP2, false);
-      }
-      else {
-        if (optionValue == 1) {
-          IncreaseAlarm(1);
+          Display("ALARM", temp_DP, true);
         }
-        else if (optionValue == 255) {
-          DecreaseAlarm(1);
-        }
-        char temp2[5] = "     ";
+        else if (option == 8) {
+          char temp_DP[5] = "00000";
+          if (bitRead(AlarmEnabled, 7)) {
+            temp_DP[0] = '2';
+          }
 
-        // <SpaghettiCode meta="Displaing alarm">
-        if (Mode24H) {
-          temp2[0] = ToCurrentBase(AlarmTimesHour[CurrentAlarm - 1], 1);
-          temp2[1] = ToCurrentBase(AlarmTimesHour[CurrentAlarm - 1], 0);
+          Display("SIGNL", temp_DP, true);
         }
         else {
-          byte mod12 = AlarmTimesHour[CurrentAlarm - 1];
-          if (mod12 > 12) {
-            mod12 -= 12;
-          }
-          temp2[0] = ToCurrentBase(mod12, 1);
-          temp2[1] = ToCurrentBase(mod12, 0);
+          option--;
 
-          if (AlarmTimesHour[CurrentAlarm - 1] >= 12) {
-            temp2[4] = 'P';
+          char temp[5] = " ||| ";
+          byte index = option * 3;
+          temp[1] = DayNames[index];
+          temp[2] = DayNames[index + 1];
+          temp[3] = DayNames[index + 2];
+
+          char temp_DP[5] = "00000";
+          if (bitRead(AlarmEnabled, option)) {
+            temp_DP[0] = '2';
+          }
+
+          option++;
+
+          Display(temp, temp_DP, true);
+        }
+        break;
+      case 1:
+        if (option == 0) {
+          if (optionValue == 255) {
+            ChangeAlarm(-1);
+          }
+          else if (optionValue == 1) {
+            ChangeAlarm(1);
+          }
+
+          char temp[5] = "hhmm ";
+
+          temp[2] = ToCurrentBase(AlarmMinute, 1);
+          temp[3] = ToCurrentBase(AlarmMinute, 0);
+          if (Mode24H) {
+            temp[0] = ToCurrentBase(AlarmHour, 1);
+            temp[1] = ToCurrentBase(AlarmHour, 0);
           }
           else {
-            temp2[4] = 'A';
+            byte AlarmHourTemp = AlarmHour % 12;
+            if (AlarmHourTemp == 0) {
+              AlarmHourTemp = 12;
+            }
+
+            temp[0] = ToCurrentBase(AlarmHourTemp, 1);
+            temp[1] = ToCurrentBase(AlarmHourTemp, 0);
+            if (AlarmHour >= 12) {
+              temp[4] = 'P';
+            }
+            else {
+              temp[4] = 'A';
+            }
           }
-        }
-        if (temp2[0] == '0') {
-          temp2[0] = ' ';
-        }
-        temp2[2] = ToCurrentBase(AlarmTimesMinute[CurrentAlarm - 1], 1);
-        temp2[3] = ToCurrentBase(AlarmTimesMinute[CurrentAlarm - 1], 0);
-        // </SpaghettiCode>
 
-        Display(temp2, temp_DP2, false);
-      }
-    }
-    else if (editing == 2) {
-      bitWrite(AlarmsEnabled, CurrentAlarm, !bitRead(AlarmsEnabled, CurrentAlarm));
-      editing = 1;
-      updateDisplay = true;
+          char temp_DP[5] = "01200";
+          if (AlarmEnabled & 0b01111111) {
+            temp_DP[0] = '2';
+          }
+
+          Display(temp, temp_DP, false);
+        }
+        else {
+          bitWrite(AlarmEnabled, option - 1, !bitRead(AlarmEnabled, option - 1));
+          editing = 0;
+          updateDisplay = true;
+        }
+        break;
+      case 2:
+        editing = 1;
+        updateDisplay = true;
+        if (AlarmEnabled & 0b01111111) {
+          AlarmEnabled &= 0b10000000; // Disable alarm for all days of week
+        }
+        else {
+          AlarmEnabled |= 0b01111111; // Enable alarm for all days of week
+        }
+        break;
     }
   }
 }
 
-void DecreaseAlarm(byte amount) {
-  AlarmTimesMinute[CurrentAlarm - 1] -= amount;
-  if (AlarmTimesMinute[CurrentAlarm - 1] >= 255) {
-    AlarmTimesMinute[CurrentAlarm - 1] += 60;
-    AlarmTimesHour[CurrentAlarm - 1]--;
-    AlarmTimesHour[CurrentAlarm - 1] += 24;
-    AlarmTimesHour[CurrentAlarm - 1] %= 24;
-  }
-}
-
-void IncreaseAlarm(byte amount) {
-  AlarmTimesMinute[CurrentAlarm - 1] += amount;
-
-  if (AlarmTimesMinute[CurrentAlarm - 1] >= 60) {
-    AlarmTimesMinute[CurrentAlarm - 1] -= 60;
-    AlarmTimesHour[CurrentAlarm - 1]++;
-    AlarmTimesHour[CurrentAlarm - 1] %= 24;
-  }
+void AlarmMenuTransition() {
+  State = AlarmMenuState;
+  ChangeAlarm(-AlarmSnoozed * SnoozeMinutes);
+  AlarmSnoozed = 0;
+  MenuTransition();
 }

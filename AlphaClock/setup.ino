@@ -43,7 +43,7 @@ void setup()
 
   updateDisplay = true;
 
-  AlarmsDone = 255; // Prevent any alarms from going off after startup
+  AlarmTriggered = false;
 
   StopwatchStart = 0;
   StopwatchPause = 0;

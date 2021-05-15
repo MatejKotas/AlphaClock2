@@ -16,6 +16,7 @@ unsigned long CheckTimer;
 unsigned long GeneralTimer; // Changes function based on state
 
 const char MonthNames[36] = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
+const char DayNames[21] = "MONTUEWEDTHUFRISATSUN";
 
 bool EnableSound;
 #define SoundFreqency 1397
@@ -34,16 +35,13 @@ bool StopwatchSeperator;
 
 // Alarms
 
-#define Alarms 6
+byte AlarmHour;
+byte AlarmMinute;
+byte AlarmEnabled;
+bool AlarmTriggered;
+bool HourlySignalTriggered;
 
-byte AlarmTimesHour[Alarms - 1]; // Alarm 0 is sig, always subtract 1 from index
-byte AlarmTimesMinute[Alarms - 1];
-byte AlarmsEnabled;
-byte AlarmsDone;
-
-byte CurrentAlarm;
-
-byte Snoozed[Alarms - 1];
+byte AlarmSnoozed;
 #define SnoozeMinutes 5
 
 byte BeepState;

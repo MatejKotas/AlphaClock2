@@ -68,7 +68,7 @@ void ShowTime() {
       }
     }
     
-    if (AlarmsEnabled > 0) {
+    if (AlarmEnabled > 0) {
       tempDP[0] = '2';
     }
 

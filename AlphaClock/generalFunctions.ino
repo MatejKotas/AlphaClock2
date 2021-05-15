@@ -52,7 +52,7 @@ void DisplayBool(bool on, char *printDP, bool fade) {
 
 void DisplayNumber(int num, char* printDP, bool fade) {
   char string[5] = "     ";
-
+  
   for (int i = 4; i >= 0; i--) {
     uint8_t c = num % Base;
     num /= Base;

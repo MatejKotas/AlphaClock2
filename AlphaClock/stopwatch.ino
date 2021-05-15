@@ -126,7 +126,6 @@ void ShowStopwatch() {
         temp[j] = StopwatchLapStore[i];
         j++;
       }
-      Serial.println(StopwatchLapStore);
       GeneralTimer = milliseconds + 10000; // Don't update regularly in lap mode
     }
 
