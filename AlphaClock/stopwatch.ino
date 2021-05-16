@@ -75,12 +75,9 @@ void ShowStopwatch() {
     if (!StopwatchLap) {
       char StopwatchStore[11] = "00000000000";
 
-      int differenceTemp = difference % 1000 * 10;
-      int base_dividor = 10000 / Base;
-
-      StopwatchStore[10] = ToCurrentBase(differenceTemp % base_dividor / 100, 0); // centiseconds
-      StopwatchStore[9] = ToCurrentBase(differenceTemp / base_dividor, 0); // deciseconds
-
+      long differenceTemp = difference % 1000 * Base;
+      StopwatchStore[10] = ToCurrentBase(differenceTemp * Base / 1000 % Base, 0);
+      StopwatchStore[9] = ToCurrentBase(differenceTemp / 1000, 0);
       difference /= 1000;
 
       differenceTemp = difference % 60;
