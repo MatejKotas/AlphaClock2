@@ -41,7 +41,6 @@ void ManageButtons() {
 
 bool GetButton(byte button) {
   if (ButtonReadyTimes[button] - milliseconds > MillisHalfOverflow) {
-    byte alphaButton = 1 << button;
     if (bitRead(ButtonsState, button) && !bitRead(ButtonsTriggered, button)) {
       bitSet(ButtonsTriggered, button);
       ButtonReadyTimes[button] = milliseconds + debounceTime;
@@ -72,7 +71,6 @@ bool GetButtonPair(byte button1, byte button2) {
 
 bool GetHoldButton(byte button) {
   if (ButtonReadyTimes[button] - milliseconds > MillisHalfOverflow) {
-    byte alphaButton = 1 << button;
     if (ButtonStartTimes[button] + ButtonStartHold - milliseconds > MillisHalfOverflow && bitRead(ButtonsState, button)) {
       ButtonStartTimes[button] += ButtonHoldTriggerRate; // Set up start time so we get here in ButtonHoldTriggerRate milliseconds
       return true;
