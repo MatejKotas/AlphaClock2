@@ -139,12 +139,13 @@ void updateNightLight(bool nightTemp) {
 }
 
 void updateBrightness() {
-  if (brightness == 0) {
+  if (brightness == 255) {
     brightness = BrightnessLevels - 1;;
   }
   else if (brightness == BrightnessLevels) {
-    brightness = 1;
+    brightness = 0;
   }
+  
   a5_brightLevel = BrightnessLevel[brightness];
   a5_brightMode = BrightnessMode[brightness];
 

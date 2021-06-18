@@ -35,10 +35,6 @@ void setup()
     night = false;
   }
 
-  if (brightness == 0) {
-    brightness = 1;
-  }
-
   updateBrightness();
 
   updateDisplay = true;
