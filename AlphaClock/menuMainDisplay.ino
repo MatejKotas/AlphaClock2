@@ -228,11 +228,11 @@ void BrightnessSubMenu(byte optionValue) {
           DisplayBool(UseBrightnessAdjustment, "20000", false);
           break;
         case BrightnessDaySubMenuItem:
-          DayBrightness = changeOptionMin(DayBrightness, optionValue, 1, BrightnessLevels);
+          DayBrightness = changeOptionMin(DayBrightness, optionValue, 0, BrightnessLevels);
           DisplayNumber(DayBrightness, "20000", false);
           break;
         case BrightnessNightSubMenuItem:
-          NightBrightness = changeOptionMin(NightBrightness, optionValue, 1, BrightnessLevels);
+          NightBrightness = changeOptionMin(NightBrightness, optionValue, 0, BrightnessLevels);
           DisplayNumber(NightBrightness, "20000", false);
           break;
       }
