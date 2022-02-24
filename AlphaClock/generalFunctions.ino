@@ -20,7 +20,7 @@ void Display(char *wordToPrint, char *decimals, bool fade)
 }
 
 void Fade() {
-  if (Fading && FadeUpdateTimer - milliseconds > MillisHalfOverflow)
+  if (Fading && (long)(FadeUpdateTimer - milliseconds) < 0)
   {
     FadeUpdateTimer = milliseconds + 10;
 

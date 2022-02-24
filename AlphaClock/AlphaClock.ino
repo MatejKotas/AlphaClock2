@@ -8,7 +8,6 @@ unsigned long FadeUpdateTimer;
 bool Fading;
 
 unsigned long milliseconds;
-const unsigned long MillisHalfOverflow = (unsigned long)-1 / 2;
 
 unsigned long CheckTimer;
 #define CheckTimerInterval 500

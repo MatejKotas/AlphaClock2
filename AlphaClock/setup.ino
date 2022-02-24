@@ -48,8 +48,6 @@ void setup()
   StopwatchLap = false;
   StopwatchSeperator = false;
   
-  milliseconds = millis() / 2;
-
   FadeUpdateTimer = milliseconds;
   UpdateEEPROMTimer = milliseconds;
 

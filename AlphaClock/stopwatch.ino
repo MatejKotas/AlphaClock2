@@ -60,7 +60,7 @@ void ShowStopwatch() {
     StopwatchSeperator = true;
   }
 
-  if (updateDisplay || milliseconds - GeneralTimer < MillisHalfOverflow) {
+  if (updateDisplay || (long)(GeneralTimer - milliseconds) < 0) {
     GeneralTimer = milliseconds + (1000 / (Base * Base)) - 1;
     updateDisplay = false;
 

@@ -15,7 +15,7 @@ void ChangeAlarm(int amount) { // Increases the Alarm time amount minutes. Decre
 }
 
 void ShowAlarmNow() {
-  if (NextBeepStateChange - milliseconds > MillisHalfOverflow) {
+  if ((long)(NextBeepStateChange - milliseconds) < 0) {
     if (BeepState < AlarmBeeps) {
       a5tone(880, AlarmBeepDuration);
       NextBeepStateChange = milliseconds + AlarmBeepRate;
@@ -26,7 +26,7 @@ void ShowAlarmNow() {
       NextBeepStateChange = milliseconds + (AlarmBeepRate * AlarmBeeps);
     }
   }
-  else if (GeneralTimer - milliseconds > MillisHalfOverflow) {
+  else if ((long)(GeneralTimer - milliseconds) < 0) {
     TimeTransition();
   }
 
