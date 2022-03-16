@@ -38,16 +38,20 @@ void loop()
 void Check() {
   bool nightTemp = isNight();
   CheckTimer = milliseconds + CheckTimerInterval;
+
   if (nightTemp != night) {
     night = nightTemp;
     updateNightLight(night);
 
-    if (night) {
-      brightness = NightBrightness;
+    if (UseBrightnessAdjustment) {
+      if (night) {
+        brightness = NightBrightness;
+      }
+      else {
+        brightness = DayBrightness;
+      }
     }
-    else {
-      brightness = DayBrightness;
-    }
+
     updateBrightness();
   }
   if (EEPROMUpdatePending && (long)(UpdateEEPROMTimer - milliseconds) < 0) {
