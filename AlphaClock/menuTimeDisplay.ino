@@ -74,15 +74,17 @@ void TimeTimeMenu(byte optionValue) {
       }
       switch (subOption) {
         case HourSubMenuItem:
-          adjustTime(optionValueLong * 3600);
+          setTime(hour() + optionValueLong, minute(), second(), day(), month(), year());
           DisplayNumber(hour(), "20000", false);
           break;
+          
         case MinuteSubMenuItem:
-          adjustTime(optionValueLong * 60);
+          setTime(hour(), minute() + optionValueLong, second(), day(), month(), year());
           DisplayNumber(minute(), "20000", false);
           break;
+          
         case SecondSubMenuItem:
-          adjustTime(optionValueLong);
+          setTime(hour(), minute(), second() + optionValueLong, day(), month(), year());
           DisplayNumber(second(), "20000", false);
           break;
       }
