@@ -111,23 +111,23 @@ void DateMenu(byte optionValue) {
     }
   }
   else if (editing == 2) {
-    long optionValueLong = optionValue;
+    int optionValueInt = optionValue;
     if (optionValue == 255) {
-      optionValueLong = -1;
+      optionValueInt = -1;
     }
 
     switch (subOption) {
       case MonthMenuItem:
-        ShowMonth(optionValueLong);
+        ShowMonth(optionValueInt);
         break;
 
       case DayMenuItem:
-        setTime(hour(), minute(), second(), day() + optionValueLong, month(), year());
+        setTime(hour(), minute(), second(), day() + optionValueInt, month(), year());
         DisplayNumber(day(), "20000", false);
         break;
 
       case YearMenuItem:
-        setTime(hour(), minute(), second(), day(), month(), year() + optionValueLong);
+        setTime(hour(), minute(), second(), day(), month(), changeOptionMin(year(), optionValueInt, 1970, 2090 /* Limited by time.cpp */));
         DisplayNumber(year(), "20000", false);
         break;
     }
@@ -137,8 +137,8 @@ void DateMenu(byte optionValue) {
   }
 }
 
-void ShowMonth(long optionValueLong) { // Must do because of compiler bug
-  setTime(hour(), minute(), second(), day(), month() + optionValueLong, year());
+void ShowMonth(int optionValue) { // Must do because of compiler bug
+  setTime(hour(), minute(), second(), day(), (month() + 11 + optionValue) % 12 + 1, year());
   char temp[5] = "     ";
 
   byte monthTemp = (month() - 1) * 3;
